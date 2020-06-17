@@ -1,0 +1,229 @@
+﻿@model BugTracker.Models.TicketModel
+@{
+    ViewBag.Title = "Details";
+}
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ticketTable').DataTable();
+        });
+    </script>
+}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                    Details of the ticket
+                    <small>Details</small>
+                </h1>
+                @*<ol class="breadcrumb">
+                        <li>
+                            <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
+                        </li>
+                        <li class="active">
+                            <i class="fa fa-file"></i> Blank Page
+                        </li>
+                    </ol>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Details</h2>
+                <div>
+                    <h4>TicketModel</h4>
+                    <hr />
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @*@Html.DisplayNameFor(model => model.Project.Name)*@
+                            ProjectId
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Project.Name)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Description)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Created)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Created)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Updated)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Updated)
+                        </dd>
+                        <dt>
+                            @*@Html.DisplayNameFor(model => model.TicketPriority.Name)*@
+                            TicketPriorityId
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.TicketPriority.Name)
+                        </dd>
+                        <dt>
+                            @*@Html.DisplayNameFor(model => model.TicketStatus.Name)*@
+                            TicketStatusId
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.TicketStatus.Name)
+                        </dd>
+                        <dt>
+                            @*@Html.DisplayNameFor(model => model.TicketType.Name)*@
+                            TicketTypeId
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.TicketType.Name)
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+<div class="container" style="display:block">
+    <div style="color:blueviolet">
+        Comments:
+        @foreach (var comment in Model.TicketComments)
+        {
+            <p>
+                @comment.Comment - by @comment.User.FinalName - @comment.Created.ToString("dd/MM/yyyy HH:mm")
+            </p>
+        }
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div style="color:blueviolet">
+            Please submit your comment!
+        </div>
+        <div>
+            @using (Html.BeginForm("CreateComment", "TicketModels", new { id = Model.Id }, FormMethod.Post))
+            {
+                <input type="hidden" name="comments" />
+                <textarea name="body">
+            </textarea>
+                if (ViewBag.ErrorMessage != null)
+                {
+                    <span>@ViewBag.ErrorMessage</span>
+                }
+                <input type="submit" value="Submit" />
+            }
+        </div>
+    }
+    <div style="color:blue">
+        Attachments:
+        @foreach (var attachment in Model.TicketAttachments)
+        {
+            <p>
+                @attachment.User.FinalName - @attachment.Description - @attachment.Created.ToString("dd/MM/yyyy HH:mm");
+            </p>
+            <img src="@attachment.FilePath" class="img-responsive" />
+        }
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div>
+            @using (Html.BeginForm("CreateAttachments", "TicketModels", new { id = Model.Id }, FormMethod.Post, new { content = Model.Description, enctype = "Multipart/form-data" }))
+            {
+                <input name="img" type="file" class="form-control" id="fileUpload" />
+                <div style="color:blue">
+                    Please input your subject!!
+                </div>
+                <textarea name="content"></textarea>
+                if (ViewBag.ErrorMessage != null)
+                {
+                    <span>@ViewBag.ErrorMessage</span>
+                }
+                <input type="submit" value="Submit" />
+            }
+        </div>
+    }
+</div>
+<table id="ticketTable" class="table">
+    <thead>
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Property)*@
+                PropertyChanged
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Name)*@
+                OldValue
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Created)*@
+                NewValue
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Updated)*@
+                Changed
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Project.Name)*@
+                Modifier
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TicketHistories)
+        {
+            <tr>
+                <td @*style="text-align:center"*@>
+                    @Html.DisplayFor(modelItem => item.Property)
+                </td>
+                <td @*style="text-align:center"*@>
+                    @Html.DisplayFor(modelItem => item.OldValue)
+                </td>
+                <td @*style="text-align:center"*@>
+                    @Html.DisplayFor(modelItem => item.NewValue)
+                </td>
+                <td @*style="text-align:center"*@>
+                    @Html.DisplayDate(item.Changed)
+                </td>
+                <td @*style="text-align:center"*@>
+                    @Html.DisplayFor(modelItem => item.User.FinalName)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+<style>
+    body {
+        background-color: white;
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
